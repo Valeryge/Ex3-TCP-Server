@@ -143,6 +143,11 @@
     <ClCompile Include="RequestParser.cpp" />
     <ClCompile Include="WebServerFunctions.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MainH.h" />
+    <ClInclude Include="RequestParser.h" />
+    <ClInclude Include="WebServerFunctions.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

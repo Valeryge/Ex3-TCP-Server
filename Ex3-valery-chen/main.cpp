@@ -1,36 +1,12 @@
-#pragma once
-#include "WebServerFunctions.cpp"
-#include "RequestParser.cpp"
 
 
-
-struct SocketState
-{
-	SOCKET id;			// Socket handle
-	int	recv;			// Receiving?
-	int	send;			// Sending?
-	int sendSubType;	// Sending sub-type
-	char buffer[1000];
-	int len;
-};
-
-const int TIME_PORT = 27015;
+#include "MainH.h"
 const int MAX_SOCKETS = 60;
+const int TIME_PORT = 27015;
 const int SEND_TIME = 1;
 const int SEND_SECONDS = 2;
-
- void handleWaitingRecv(fd_set& waitRecv, int& nfd);
- void handleWaitingSend(fd_set& waitSend, int& nfd);
- bool addSocket(SOCKET id, int what);
- void removeSocket(int index);
- void acceptConnection(int index);
- void receiveMessage(int index);
- void sendMessage(int index);
-
-struct SocketState sockets[MAX_SOCKETS] = { 0 };
 int socketsCount = 0;
-
-
+struct SocketState sockets[MAX_SOCKETS] = { 0 };
 void main()
 {
 	// Initialize Winsock (Windows Sockets).
@@ -119,7 +95,7 @@ void main()
 		WSACleanup();
 		return;
 	}
-	addSocket(listenSocket, LISTEN);
+	MainH::addSocket(listenSocket, LISTEN);
 
 	// Accept connections and handles them one by one.
 	while (true)
@@ -159,12 +135,12 @@ void main()
 			WSACleanup();
 			return;
 		}
-		handleWaitingRecv(waitRecv, nfd);
-		handleWaitingSend(waitSend, nfd);
-		
-		
+		MainH::handleWaitingRecv(waitRecv, nfd);
+		MainH::handleWaitingSend(waitSend, nfd);
 
-		
+
+
+
 	}
 
 	// Closing connections and Winsock.
@@ -174,7 +150,7 @@ void main()
 }
 
 
-void handleWaitingRecv(fd_set& waitRecv, int& nfd) {
+void MainH::handleWaitingRecv(fd_set& waitRecv, int& nfd) {
 	for (int i = 0; i < MAX_SOCKETS && nfd > 0; i++)
 	{
 		if (FD_ISSET(sockets[i].id, &waitRecv))
@@ -183,17 +159,17 @@ void handleWaitingRecv(fd_set& waitRecv, int& nfd) {
 			switch (sockets[i].recv)
 			{
 			case LISTEN:
-				acceptConnection(i);
+				MainH::acceptConnection(i);
 				break;
 
 			case RECEIVE:
-				receiveMessage(i);
+				MainH::receiveMessage(i);
 				break;
 			}
 		}
 	}
 }
-void handleWaitingSend(fd_set& waitSend, int& nfd) {
+void MainH::handleWaitingSend(fd_set& waitSend, int& nfd) {
 	for (int i = 0; i < MAX_SOCKETS && nfd > 0; i++)
 	{
 		if (FD_ISSET(sockets[i].id, &waitSend))
@@ -202,14 +178,14 @@ void handleWaitingSend(fd_set& waitSend, int& nfd) {
 			switch (sockets[i].send)
 			{
 			case SEND:
-				sendMessage(i);
+				MainH::sendMessage(i);
 				break;
 			}
 		}
 	}
 
 }
-bool addSocket(SOCKET id, int what)
+bool MainH::addSocket(SOCKET id, int what)
 {
 	for (int i = 0; i < MAX_SOCKETS; i++)
 	{
@@ -226,14 +202,14 @@ bool addSocket(SOCKET id, int what)
 	return (false);
 }
 
-void removeSocket(int index)
+void MainH::removeSocket(int index)
 {
 	sockets[index].recv = EMPTY;
 	sockets[index].send = EMPTY;
 	socketsCount--;
 }
 
-void acceptConnection(int index)
+void MainH::acceptConnection(int index)
 {
 	SOCKET id = sockets[index].id;
 	struct sockaddr_in from;		// Address of sending partner
@@ -264,7 +240,7 @@ void acceptConnection(int index)
 	return;
 }
 
-void receiveMessage(int index)
+void MainH::receiveMessage(int index)
 {
 	SOCKET msgSocket = sockets[index].id;
 
@@ -320,40 +296,40 @@ void receiveMessage(int index)
 
 }
 
-void sendMessage(int index)
+void MainH::sendMessage(int index)
 {
 	int bytesSent = 0;
 	char sendBuff[1000];
 	string response;
 	SOCKET msgSocket = sockets[index].id;
 
-	switch (GetRequestType(sockets[index].buffer)) {
-		case _GET:
-			response = GetResponse(sockets[index].buffer);
-			break;
-	/*	case _POST:
-			cout << HTTPParser::GetBody(request) << endl;
-			response = HTTP::PostResponse(request);
-			break;
-		case _HEAD:
-			response = HTTP::HeadResponse(request);
-			break;
-		case _OPTIONS:
-			response = HTTP::OptionsResponse(request);
-			break;
-		case _PUT:
-			response = HTTP::PutResponse(request);
-			break;
-		case _DELETE:
-			response = HTTP::DeleteResponse(request);
-			break;
-		case _TRACE:
-			response = HTTP::TraceResponse(request);
-			break;
-		default:
-			response = HTTP::ErrorResponse(request);
-			break;
-		*/
+	switch (RequestParser::GetRequestType(sockets[index].buffer)) {
+	case _GET:
+		response = WebServerFunctions::GetResponse(sockets[index].buffer);
+		break;
+		/*	case _POST:
+				cout << HTTPParser::GetBody(request) << endl;
+				response = HTTP::PostResponse(request);
+				break;
+			case _HEAD:
+				response = HTTP::HeadResponse(request);
+				break;
+			case _OPTIONS:
+				response = HTTP::OptionsResponse(request);
+				break;
+			case _PUT:
+				response = HTTP::PutResponse(request);
+				break;
+			case _DELETE:
+				response = HTTP::DeleteResponse(request);
+				break;
+			case _TRACE:
+				response = HTTP::TraceResponse(request);
+				break;
+			default:
+				response = HTTP::ErrorResponse(request);
+				break;
+			*/
 	}
 
 	strcpy(sendBuff, response.c_str());

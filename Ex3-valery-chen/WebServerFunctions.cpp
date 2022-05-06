@@ -1,9 +1,7 @@
-#pragma once
-#include "RequestParser.cpp"
+#include "WebServerFunctions.h"
 
 
-
-string GetTime() {
+string WebServerFunctions::GetTime() {
 	time_t timer = time(nullptr);
 	struct tm  tstruct;
 	tstruct = *localtime(&timer);
@@ -13,7 +11,7 @@ string GetTime() {
 	return curTimeStr;
 }
 
-string GetLastModified(string i_FileName) {
+string WebServerFunctions::GetLastModified(string i_FileName) {
 	struct stat result;
 	stat(i_FileName.c_str(), &result);
 	struct tm  tstruct;
@@ -23,15 +21,15 @@ string GetLastModified(string i_FileName) {
 	string lastModifiedStr = lastModified;
 	return lastModifiedStr;
 }
-string getHTTPAppLayer(string i_Filename) {
+string WebServerFunctions::getHTTPAppLayer(string filename) {
 	string HTTPAppLayer, headerContent, htmlContent, htmlContentSize;
 	string curTimeStr = GetTime();
-	string lastModified = GetLastModified(i_Filename);
+	string lastModified = GetLastModified(filename);
 
-	getline(ifstream(i_Filename), htmlContent, '\0');
+	getline(ifstream(filename), htmlContent, '\0');
 	htmlContent.erase(0, 3); // undisired characters
 	htmlContentSize = to_string(strlen(htmlContent.c_str()) - 1);
-	if (!strcmp(i_Filename.c_str(), "C:\\temp\\site_404.html")) {
+	if (!strcmp(filename.c_str(), "C:\\temp\\site_404.html")) {
 		headerContent = "HTTP/1.1 404 Not Found\r\n";
 	}
 	else {
@@ -50,11 +48,11 @@ string getHTTPAppLayer(string i_Filename) {
 }
 
 
-string GetResponse(string i_Request) {
+string WebServerFunctions::GetResponse(string request) {
 
 	string HTTPAppLayer;
-	string source = GetResource(i_Request);
-	string parameterLang = GetLangParameterValue(i_Request);
+	string source = RequestParser::GetResource(request);
+	string parameterLang = RequestParser::GetLangParameterValue(request);
 
 	if (!strcmp(source.c_str(), "/site.html")) {
 		if (!strcmp(parameterLang.c_str(), "en")) HTTPAppLayer = getHTTPAppLayer("C:\\temp\\en_site.html");
