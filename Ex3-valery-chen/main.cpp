@@ -1,11 +1,7 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <iostream>
-using namespace std;
-#pragma comment(lib, "Ws2_32.lib")
-#include <winsock2.h>
-#include <string.h>
-#include <time.h>
+#pragma once
+#include "WebServerFunctions.cpp"
 #include "RequestParser.cpp"
+
 
 
 struct SocketState
@@ -23,11 +19,13 @@ const int MAX_SOCKETS = 60;
 const int SEND_TIME = 1;
 const int SEND_SECONDS = 2;
 
-bool addSocket(SOCKET id, int what);
-void removeSocket(int index);
-void acceptConnection(int index);
-void receiveMessage(int index);
-void sendMessage(int index);
+ void handleWaitingRecv(fd_set& waitRecv, int& nfd);
+ void handleWaitingSend(fd_set& waitSend, int& nfd);
+ bool addSocket(SOCKET id, int what);
+ void removeSocket(int index);
+ void acceptConnection(int index);
+ void receiveMessage(int index);
+ void sendMessage(int index);
 
 struct SocketState sockets[MAX_SOCKETS] = { 0 };
 int socketsCount = 0;
@@ -325,15 +323,15 @@ void receiveMessage(int index)
 void sendMessage(int index)
 {
 	int bytesSent = 0;
-	char sendBuff[255];
-
+	char sendBuff[1000];
+	string response;
 	SOCKET msgSocket = sockets[index].id;
 
 	switch (GetRequestType(sockets[index].buffer)) {
 		case _GET:
-			response = HTTP::GetResponse(request);
+			response = GetResponse(sockets[index].buffer);
 			break;
-		case _POST:
+	/*	case _POST:
 			cout << HTTPParser::GetBody(request) << endl;
 			response = HTTP::PostResponse(request);
 			break;
@@ -355,10 +353,10 @@ void sendMessage(int index)
 		default:
 			response = HTTP::ErrorResponse(request);
 			break;
-		
+		*/
 	}
 
-
+	strcpy(sendBuff, response.c_str());
 	bytesSent = send(msgSocket, sendBuff, (int)strlen(sendBuff), 0);
 	if (SOCKET_ERROR == bytesSent)
 	{
