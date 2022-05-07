@@ -8,11 +8,14 @@ string GetResource(string request) {
 	{
 		i++;
 	}
-	while (request[i] != '?')
+	i++;
+	j = i;
+	while (request[j] != '?')
 	{
 		j++;
 	}
-	string resource=request.substr(i, j);
+	
+	string resource=request.substr(i, j-i);
 
 
 	return resource;

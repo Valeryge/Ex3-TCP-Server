@@ -11,11 +11,12 @@ struct SocketState
 	int len;
 };
 const int MAX_SOCKETS = 60;
-const int TIME_PORT = 27015;
+const int TIME_PORT = 8080;
 const int SEND_TIME = 1;
 const int SEND_SECONDS = 2;
 int socketsCount = 0;
 struct SocketState sockets[MAX_SOCKETS] = { 0 };
+
 
 
 void main()
@@ -273,10 +274,11 @@ void receiveMessage(int index)
 	}
 	else
 	{
-		sockets[index].buffer[len + bytesRecv] = '\0'; //add the null-terminating to make it a string
+		sockets[index].buffer[bytesRecv] = '\0'; //add the null-terminating to make it a string
 		//cout << "Time Server: Recieved: " << bytesRecv << " bytes of \"" << &sockets[index].buffer[len] << "\" message.\n";
 
 		sockets[index].len += bytesRecv;
+		sockets[index].send = SEND;
 
 		/*if (sockets[index].len > 0)
 		{

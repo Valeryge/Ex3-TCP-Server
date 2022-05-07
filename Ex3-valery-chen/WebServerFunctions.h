@@ -3,5 +3,5 @@
 
 string GetTime();
 string GetLastModified(string fileName);
-string getAppLayer(string filename);
+string getHTTPAppLayer(string filename);
 string GetResponse(string request);
