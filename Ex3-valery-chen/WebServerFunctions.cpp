@@ -22,49 +22,68 @@ string GetLastModified(string i_FileName) {
 	string lastModifiedStr = lastModified;
 	return lastModifiedStr;
 }
-string getHTTPAppLayer(string filename) {
-	string HTTPAppLayer, headerContent, htmlContent, htmlContentSize;
-	string curTimeStr = GetTime();
+string getAppLayer(string filename) {
+	
+	string time = GetTime();
 	string lastModified = GetLastModified(filename);
+	string appLayer, header, html, htmlSize;
 
-	getline(ifstream(filename), htmlContent, '\0');
-	htmlContent.erase(0, 3); // undisired characters
-	htmlContentSize = to_string(strlen(htmlContent.c_str()) - 1);
-	if (!strcmp(filename.c_str(), "C:\\temp\\site_404.html")) {
-		headerContent = "HTTP/1.1 404 Not Found\r\n";
+	getline(ifstream(filename), html, '\0');
+	html.erase(0, 3); 
+	htmlSize = to_string(strlen(html.c_str()) - 1);
+
+	if (strcmp(filename.c_str(), "C:\\temp\\site_404.html")!=0) 
+	{
+		header = "HTTP/1.1 200 OK\r\n";
+		
 	}
-	else {
-		headerContent = "HTTP/1.1 200 OK\r\n";
+	else 
+	{
+		header = "HTTP/1.1 404 Not Found\r\n";
 	}
 
-	headerContent +=
+	header +=
 		"Server: WebServer\r\n"
 		"Connection: Keep-Alive\r\n"
-		"Date: " + curTimeStr + "\r\n"
+		"Date: " + time + "\r\n"
 		"Last-Modified: " + lastModified + "\r\n"
 		"Content-Type: text/html\r\n"
-		"Content-Length: " + htmlContentSize + "\r\n\r\n";
-
-	return headerContent + htmlContent;
+		"Content-Length: " + htmlSize + "\r\n\r\n";
+	appLayer = header + html;
+	return appLayer;
 }
 
 
 string GetResponse(string request) {
 
-	string HTTPAppLayer;
+	string appLayer;
 	string source = GetResource(request);
 	string parameterLang = GetLangParameterValue(request);
 
-	if (!strcmp(source.c_str(), "/site.html")) {
-		if (!strcmp(parameterLang.c_str(), "en")) HTTPAppLayer = getHTTPAppLayer("C:\\temp\\en_site.html");
-		else if (!strcmp(parameterLang.c_str(), "he")) HTTPAppLayer = getHTTPAppLayer("C:\\temp\\he_site.html");
-		else if (!strcmp(parameterLang.c_str(), "fr")) HTTPAppLayer = getHTTPAppLayer("C:\\temp\\fr_site.html");
-		else										   HTTPAppLayer = getHTTPAppLayer("C:\\temp\\site_404.html");
+	if (strcmp(source.c_str(), "/site.html")!=0) 
+	{
+		appLayer = getHTTPAppLayer("C:\\temp\\site_404.html");
 	}
 	else {
-		HTTPAppLayer = getHTTPAppLayer("C:\\temp\\site_404.html");
+		
+		if (strcmp(parameterLang.c_str(), "en") == 0)
+		{
+			appLayer = getAppLayer("C:\\temp\\en_site.html");
+		}
+		else if (strcmp(parameterLang.c_str(), "he") == 0)
+		{
+			appLayer = getAppLayer("C:\\temp\\he_site.html");
+		}
+		else if (strcmp(parameterLang.c_str(), "fr") == 0)
+		{
+			appLayer = getAppLayer("C:\\temp\\fr_site.html");
+		}
+		else
+		{
+			appLayer = getAppLayer("C:\\temp\\site_404.html");
+		}
 	}
 
-	return HTTPAppLayer;
+	return appLayer;
 }
 
