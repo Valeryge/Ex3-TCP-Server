@@ -18,9 +18,6 @@ int socketsCount = 0;
 struct SocketState sockets[MAX_SOCKETS] = { 0 };
 
 
-
-
-
 void main()
 {
 	// Initialize Winsock (Windows Sockets).

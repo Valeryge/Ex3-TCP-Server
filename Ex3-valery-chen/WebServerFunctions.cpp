@@ -62,7 +62,7 @@ string GetResponse(string request) {
 
 	if (strcmp(source.c_str(), "/site.html")!=0) 
 	{
-		appLayer = getHTTPAppLayer("C:\\temp\\site_404.html");
+		appLayer = getAppLayer("C:\\temp\\site_404.html");
 	}
 	else {
 		
