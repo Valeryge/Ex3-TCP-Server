@@ -1,6 +1,17 @@
-#ifndef __RequestParser_H_
-#define __RequestParser_H_
-#include "MainH.h"
+#pragma once
+
+
+#define _CRT_SECURE_NO_WARNINGS
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#include <iostream>
+#include <string.h>
+#include <time.h>
+#include <fstream>
+#include <string>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <ctime>
+#pragma comment(lib, "Ws2_32.lib")
 #define EMPTY 0
 #define LISTEN 1
 #define RECEIVE 2
@@ -19,16 +30,8 @@
 #define DELETE_success 1
 #define DELETE_failed 2
 #define MINUTES2 120000
+using namespace std;
 
-class RequestParser
-{
-
-public:
-
-	static const int GetRequestType(string request);
-	static string GetResource(string request);
-	static string GetLangParameterValue(string request);
-
-
-};
-#endif
+string GetResource(string request);
+string GetLangParameterValue(string request);
+const int GetRequestType(string request);

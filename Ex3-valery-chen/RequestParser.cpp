@@ -1,7 +1,6 @@
-
 #include "RequestParser.h"
 
-string RequestParser::GetResource(string request) {
+string GetResource(string request) {
 
 	int i = 0;
 	int j = 0;
@@ -13,12 +12,12 @@ string RequestParser::GetResource(string request) {
 	{
 		j++;
 	}
-	request.substr(i, j);
+	string resource=request.substr(i, j);
 
 
-	return request;
+	return resource;
 }
-string RequestParser::GetLangParameterValue(string request) {
+string GetLangParameterValue(string request) {
 
 	string valueOfLang = "";
 	int indexOfLang = request.find("lang");
@@ -36,7 +35,7 @@ string RequestParser::GetLangParameterValue(string request) {
 }
 
 
-const int RequestParser::GetRequestType(string request)
+const int GetRequestType(string request)
 {
 	string requestType = "";
 

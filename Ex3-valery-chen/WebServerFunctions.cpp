@@ -1,7 +1,8 @@
+
 #include "WebServerFunctions.h"
 
 
-string WebServerFunctions::GetTime() {
+string GetTime() {
 	time_t timer = time(nullptr);
 	struct tm  tstruct;
 	tstruct = *localtime(&timer);
@@ -11,7 +12,7 @@ string WebServerFunctions::GetTime() {
 	return curTimeStr;
 }
 
-string WebServerFunctions::GetLastModified(string i_FileName) {
+string GetLastModified(string i_FileName) {
 	struct stat result;
 	stat(i_FileName.c_str(), &result);
 	struct tm  tstruct;
@@ -21,7 +22,7 @@ string WebServerFunctions::GetLastModified(string i_FileName) {
 	string lastModifiedStr = lastModified;
 	return lastModifiedStr;
 }
-string WebServerFunctions::getHTTPAppLayer(string filename) {
+string getHTTPAppLayer(string filename) {
 	string HTTPAppLayer, headerContent, htmlContent, htmlContentSize;
 	string curTimeStr = GetTime();
 	string lastModified = GetLastModified(filename);
@@ -48,11 +49,11 @@ string WebServerFunctions::getHTTPAppLayer(string filename) {
 }
 
 
-string WebServerFunctions::GetResponse(string request) {
+string GetResponse(string request) {
 
 	string HTTPAppLayer;
-	string source = RequestParser::GetResource(request);
-	string parameterLang = RequestParser::GetLangParameterValue(request);
+	string source = GetResource(request);
+	string parameterLang = GetLangParameterValue(request);
 
 	if (!strcmp(source.c_str(), "/site.html")) {
 		if (!strcmp(parameterLang.c_str(), "en")) HTTPAppLayer = getHTTPAppLayer("C:\\temp\\en_site.html");
