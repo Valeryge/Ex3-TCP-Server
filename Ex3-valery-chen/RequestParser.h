@@ -35,4 +35,4 @@ using namespace std;
 string GetResource(string request);
 string GetLangParameterValue(string request);
 const int GetRequestType(string request);
-string GetBody(string request);
+void printBody(string request);

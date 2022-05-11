@@ -1,5 +1,5 @@
 #include "RequestParser.h"
-string GetBody(string request)
+void printBody(string request)
 {
 	int requestSize = request.size();
 	char len[1000];
@@ -22,7 +22,7 @@ string GetBody(string request)
 		requestSize--;
 		j--;
 	}
-	return string(body);
+	cout << string(body)<<endl;
 }
 string GetResource(string request) {
 

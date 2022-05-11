@@ -320,8 +320,8 @@ void sendMessage(int index)
 	case _GET:
 		response = GetResponse(sockets[index].buffer);
 		break;
-			case _POST:
-				cout << GetBody(sockets[index].buffer) << endl;
+	case _POST:
+		printBody(sockets[index].buffer);
 				response =postResponse();
 				break;
 			/*case _HEAD:
