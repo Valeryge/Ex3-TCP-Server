@@ -322,7 +322,7 @@ void sendMessage(int index)
 		break;
 			case _POST:
 				cout << GetBody(sockets[index].buffer) << endl;
-				//response =PostResponse(request);
+				response =postResponse();
 				break;
 			/*case _HEAD:
 				response = HTTP::HeadResponse(request);

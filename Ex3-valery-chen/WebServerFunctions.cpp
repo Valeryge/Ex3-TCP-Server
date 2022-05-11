@@ -11,6 +11,21 @@ string GetCurTime() {
 	return currentTime;
 }
 
+string postResponse() {
+
+	string curTimeStr = GetCurTime();
+	string appLayer =
+		"HTTP/1.1 200 OK\r\n"
+		"Server: WebServer\r\n"
+		"Connection: Keep-Alive\r\n"
+		"Date: " + curTimeStr + "\r\n"
+		"Content-Type: text/html\r\n"
+		"Content-Length: 35\r\n\r\n"
+		"Post request successfully recieved!\n";
+
+	return appLayer;
+}
+
 string GetLastModified(string i_FileName) {
 	struct stat res;
 	stat(i_FileName.c_str(), &res);
