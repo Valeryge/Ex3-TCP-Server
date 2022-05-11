@@ -1,5 +1,29 @@
 #include "RequestParser.h"
+string GetBody(string request)
+{
+	int requestSize = request.size();
+	char len[1000];
+	int BodyLen;
+	char body[1000];
+	int indexLen = request.find("Content-Length:");
+	indexLen += 16;
+	int num;
+	int k = 0;
+	while(request[indexLen]!='\n'&& request[indexLen] != '\r'){
+		len[k]= request[indexLen];
+		indexLen++;
+		k++;
+	}
+	BodyLen = atoi(len);
+	int j = BodyLen;
+	for (int i = 0; i < BodyLen+1;i++) {
 
+		body[j]=request[requestSize];
+		requestSize--;
+		j--;
+	}
+	return string(body);
+}
 string GetResource(string request) {
 
 	int i = 0;

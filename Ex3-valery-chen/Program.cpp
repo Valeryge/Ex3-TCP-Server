@@ -320,11 +320,11 @@ void sendMessage(int index)
 	case _GET:
 		response = GetResponse(sockets[index].buffer);
 		break;
-		/*	case _POST:
-				cout << HTTPParser::GetBody(request) << endl;
-				response = HTTP::PostResponse(request);
+			case _POST:
+				cout << GetBody(sockets[index].buffer) << endl;
+				//response =PostResponse(request);
 				break;
-			case _HEAD:
+			/*case _HEAD:
 				response = HTTP::HeadResponse(request);
 				break;
 			case _OPTIONS:

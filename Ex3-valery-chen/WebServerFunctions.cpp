@@ -1,30 +1,28 @@
 #include "WebServerFunctions.h"
 
 #pragma comment(lib, "Ws2_32.lib")
-string GetTime() {
+string GetCurTime() {
 	time_t timer = time(nullptr);
-	struct tm  tstruct;
-	tstruct = *localtime(&timer);
-	char curTime[100];
-	strftime(curTime, sizeof(curTime), "%a, %d %b %Y %X GMT", &tstruct);
-	string curTimeStr = curTime;
-	return curTimeStr;
+	struct tm time;
+	time = *localtime(&timer);
+	char currentTime[100];
+	strftime(currentTime, sizeof(currentTime), "%a, %d %b %Y %X GMT", &time);
+	
+	return currentTime;
 }
 
 string GetLastModified(string i_FileName) {
-	struct stat result;
-	stat(i_FileName.c_str(), &result);
-	struct tm  tstruct;
-	tstruct = *localtime(&result.st_mtime);
+	struct stat res;
+	stat(i_FileName.c_str(), &res);
+	struct tm  time;
+	time = *localtime(&res.st_mtime);
 	char lastModified[100];
-	strftime(lastModified, sizeof(lastModified), "%a, %d %b %Y %X GMT", &tstruct);
-	string lastModifiedStr = lastModified;
-	return lastModifiedStr;
+	strftime(lastModified, sizeof(lastModified), "%a, %d %b %Y %X GMT", &time);
+	return lastModified;
 }
+
 string getAppLayer(string filename) {
 	string AppLayer, header, html, htmlSize;
-	string curTimeStr = GetTime();
-	string lastModified = GetLastModified(filename);
 
 	getline(ifstream(filename), html, '\0');
 	html.erase(0, 3); // undisired characters
@@ -37,11 +35,10 @@ string getAppLayer(string filename) {
 		header = "HTTP/1.1 404 Not Found\r\n";
 	}
 
-	header +=
-		"Server: WebServer\r\n"
+	header +="Server: WebServer\r\n"
 		"Connection: Keep-Alive\r\n"
-		"Date: " + curTimeStr + "\r\n"
-		"Last-Modified: " + lastModified + "\r\n"
+		"Date: " + GetCurTime() + "\r\n"
+		"Last-Modified: " + GetLastModified(filename) + "\r\n"
 		"Content-Type: text/html\r\n"
 		"Content-Length: " + htmlSize + "\r\n\r\n";
 	AppLayer = header+ html;
