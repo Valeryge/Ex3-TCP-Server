@@ -322,8 +322,8 @@ void sendMessage(int index)
 		break;
 	case _POST:
 		printBody(sockets[index].buffer);
-				response =postResponse();
-				break;
+		response =postResponse();
+		break;
 			/*case _HEAD:
 				response = HTTP::HeadResponse(request);
 				break;

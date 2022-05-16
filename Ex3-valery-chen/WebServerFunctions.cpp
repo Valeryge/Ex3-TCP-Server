@@ -16,10 +16,10 @@ string postResponse() {
 	string curTimeStr = GetCurTime();
 	string appLayer =
 		"HTTP/1.1 200 OK\r\n"
-		"Server: WebServer\r\n"
-		"Connection: Keep-Alive\r\n"
 		"Date: " + curTimeStr + "\r\n"
+		"Server: WebServer\r\n"
 		"Content-Type: text/html\r\n"
+		"Connection: Keep-Alive\r\n"
 		"Content-Length: 35\r\n\r\n"
 		"Post request successfully recieved!\n";
 
