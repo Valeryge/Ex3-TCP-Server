@@ -1,19 +1,20 @@
 #include "WebServerFunctions.h"
 
 #pragma comment(lib, "Ws2_32.lib")
-string GetCurTime() {
-	time_t timer = time(nullptr);
-	struct tm time;
-	time = *localtime(&timer);
-	char currentTime[100];
-	strftime(currentTime, sizeof(currentTime), "%a, %d %b %Y %X GMT", &time);
-	
-	return currentTime;
+
+//valery
+string GetNowTime() {
+	char buf[1000];
+	time_t now = time(0);
+	struct tm tm = *gmtime(&now);
+	strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S GMT", &tm);
+	return buf;
 }
+//end valery
 
 string postResponse() {
 
-	string curTimeStr = GetCurTime();
+	string curTimeStr = GetNowTime();
 	string appLayer =
 		"HTTP/1.1 200 OK\r\n"
 		"Date: " + curTimeStr + "\r\n"
@@ -52,7 +53,7 @@ string getAppLayer(string filename) {
 
 	header +="Server: WebServer\r\n"
 		"Connection: Keep-Alive\r\n"
-		"Date: " + GetCurTime() + "\r\n"
+		"Date: " + GetNowTime() + "\r\n"
 		"Last-Modified: " + GetLastModified(filename) + "\r\n"
 		"Content-Type: text/html\r\n"
 		"Content-Length: " + htmlSize + "\r\n\r\n";
@@ -61,7 +62,7 @@ string getAppLayer(string filename) {
 }
 
 
-string GetResponse(string request) {
+string BuildGetResponse(string request) {
 
 	string appLayer;
 	string source = GetResource(request);
@@ -93,3 +94,57 @@ string GetResponse(string request) {
 	return appLayer;
 }
 
+// valery code
+
+
+string BuildOptionsResponse(string request) {
+
+	string nowTime = GetNowTime();
+	string response =
+		"HTTP/1.1 200 OK\r\nServer: WebServer\r\nConnection: Keep-Alive\r\n"
+		"Date: " + nowTime + "\r\nContent-Type: text/html\r\nContent-Length: 69\r\n"
+		"Allow: HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE\r\n\r\n";
+
+	return response;
+}
+
+string BuildTraceResponse(string request) {
+	string nowTime = GetNowTime();
+
+	string response =
+		"HTTP/1.1 200 OK\r\nServer: WebServer\r\nConnection: Keep-Alive\r\n"
+		"Date: " + nowTime + "\r\n"
+		"Content-Type: message/http\r\n"
+		"Content-Length: " + to_string(request.length() + 1) + "\r\n\r\n"
+		+ request + "\r\n";
+
+	return response;
+}
+
+string BuildErrorResponse(string request) {
+	string nowTime = GetNowTime();
+
+	string response = 
+		"HTTP/1.1 405 Method Not Allowed\r\n"
+		"Server: WebServer\r\n"
+		"Connection: Keep-Alive\r\n"
+		"Date: " + nowTime + "\r\n"
+		"Content-Type: text/html\r\n"
+		"Content-Length: 88\r\n"
+		"Allow: OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE\r\n\r\n"
+		"Method Not Allowed\n"
+		"The allowed methods are: OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE\n";
+
+	return response;
+}
+
+string BuildTimeoutResponse() {
+	string nowTime = GetNowTime();
+
+	string response = "HTTP/1.1 408 Request Timeout\r\n"
+		"Server: WebServer\r\n"
+		"Date: " + nowTime + "\r\n"
+		"Connection: close\r\n\r\n\n";
+
+	return response;
+}

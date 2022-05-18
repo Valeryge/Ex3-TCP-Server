@@ -318,17 +318,17 @@ void sendMessage(int index)
 	int type = (int)GetRequestType(sockets[index].buffer);
 	switch (type) {
 	case _GET:
-		response = GetResponse(sockets[index].buffer);
+		response = BuildGetResponse(sockets[index].buffer);
 		break;
 	case _POST:
 		printBody(sockets[index].buffer);
-		response =postResponse();
+		response = postResponse();
 		break;
-			/*case _HEAD:
+	case _OPTIONS:			
+		response = BuildOptionsResponse(sockets[index].buffer);
+		break;
+				/*case _HEAD:
 				response = HTTP::HeadResponse(request);
-				break;
-			case _OPTIONS:
-				response = HTTP::OptionsResponse(request);
 				break;
 			case _PUT:
 				response = HTTP::PutResponse(request);
