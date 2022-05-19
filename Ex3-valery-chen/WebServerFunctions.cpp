@@ -103,10 +103,12 @@ string BuildOptionsResponse(string request) {
 	string response =
 		"HTTP/1.1 200 OK\r\nServer: WebServer\r\nConnection: Keep-Alive\r\n"
 		"Date: " + nowTime + "\r\nContent-Type: text/html\r\nContent-Length: 69\r\n"
-		"Allow: HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE\r\n\r\n";
-
+		"Allow: HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE\r\n\r\n"
+	    "The allowed methods are: HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE\n";
 	return response;
 }
+
+
 
 string BuildTraceResponse(string request) {
 	string nowTime = GetNowTime();

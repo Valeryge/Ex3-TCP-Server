@@ -327,6 +327,9 @@ void sendMessage(int index)
 	case _OPTIONS:			
 		response = BuildOptionsResponse(sockets[index].buffer);
 		break;
+	case _TRACE:
+		response = BuildTraceResponse(sockets[index].buffer);
+		break;
 				/*case _HEAD:
 				response = HTTP::HeadResponse(request);
 				break;
@@ -336,13 +339,11 @@ void sendMessage(int index)
 			case _DELETE:
 				response = HTTP::DeleteResponse(request);
 				break;
-			case _TRACE:
-				response = HTTP::TraceResponse(request);
+			
+			*/default:
+				response = BuildErrorResponse(sockets[index].buffer);
 				break;
-			default:
-				response = HTTP::ErrorResponse(request);
-				break;
-			*/
+			
 	}
 
 	strcpy(sendBuff, response.c_str());
