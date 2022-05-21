@@ -37,7 +37,7 @@ string GetLastModified(string i_FileName) {
 	return lastModified;
 }
 
-string getAppLayer(string filename) {
+string getAppLayer(string filename,int type) {
 	string AppLayer, header, html, htmlSize;
 
 	getline(ifstream(filename), html, '\0');
@@ -58,41 +58,58 @@ string getAppLayer(string filename) {
 		"Content-Type: text/html\r\n"
 		"Content-Length: " + htmlSize + "\r\n\r\n";
 	AppLayer = header+ html;
-	return AppLayer;
+	if (type== _GET) {
+		return AppLayer;
+	}
+	else {
+		return header;
+	}
+	
 }
 
 
-string BuildGetResponse(string request) {
+string BuildGetOrHeadResponse(string request,int type) {
 
 	string appLayer;
 	string source = GetResource(request);
 	string parameterLang = GetLangParameterValue(request);
 
-	if (strcmp(source.c_str(), "/site.html")!=0) {
-		appLayer = getAppLayer("C:\\Temp\\Error404.html");
-	}
-	else {
+	//if (strcmp(source.c_str(), "/site.html")!=0) {
+	//	appLayer = getAppLayer("C:\\Temp\\Error404.html");
+	//}
+	//else {
 		
-		if (strcmp(parameterLang.c_str(), "en")==0)
+		if (strcmp(parameterLang.c_str(), "en")==0|| strcmp(parameterLang.c_str(), "he") == 0|| strcmp(parameterLang.c_str(), "fr") == 0)
 		{
-			appLayer = getAppLayer("C:\\Temp\\MyWebsite_en.html");
+			appLayer = getAppLayer("C:\\Temp\\MyWebsite_"+ parameterLang+".html", type);
 		}
-		else if (strcmp(parameterLang.c_str(), "he")==0)
-		{
-			appLayer = getAppLayer("C:\\Temp\\MyWebsite_he.html");
-		}
-		else if (strcmp(parameterLang.c_str(), "fr")==0)
-		{
-			appLayer = getAppLayer("C:\\Temp\\MyWebsite_fr.html");
-		}
+
 		else
 		{
-			appLayer = getAppLayer("C:\\Temp\\Error404.html");
+			appLayer = getAppLayer("C:\\Temp\\Error404.html", type);
 		}
-	}
-
+	/*}*/
+	
 	return appLayer;
 }
+//string BuildHeadResponse(string request){
+//
+//	string appLayer;
+//	string source =GetResource(request);
+//	string parameterLang = GetLangParameterValue(request);
+//
+//	if (!strcmp(source.c_str(), "/site.html")) {
+//		if (!strcmp(parameterLang.c_str(), "en")) appLayer = getAppLayer("C:\\temp\\en_site.html");
+//		else if (!strcmp(parameterLang.c_str(), "he")) appLayer = getAppLayer("C:\\temp\\he_site.html");
+//		else if (!strcmp(parameterLang.c_str(), "fr")) appLayer = getAppLayer("C:\\temp\\fr_site.html");
+//		else										   appLayer = getAppLayer("C:\\temp\\site_404.html");
+//	}
+//	else {
+//		appLayer = getAppLayer("C:\\temp\\site_404.html");
+//	}
+//
+//	return appLayer;
+//}
 
 // valery code
 

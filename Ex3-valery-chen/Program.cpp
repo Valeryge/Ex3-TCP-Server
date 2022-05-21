@@ -318,7 +318,7 @@ void sendMessage(int index)
 	int type = (int)GetRequestType(sockets[index].buffer);
 	switch (type) {
 	case _GET:
-		response = BuildGetResponse(sockets[index].buffer);
+		response = BuildGetOrHeadResponse(sockets[index].buffer, type);
 		break;
 	case _POST:
 		printBody(sockets[index].buffer);
@@ -330,11 +330,11 @@ void sendMessage(int index)
 	case _TRACE:
 		response = BuildTraceResponse(sockets[index].buffer);
 		break;
-				/*case _HEAD:
-				response = HTTP::HeadResponse(request);
-				break;
-			case _PUT:
-				response = HTTP::PutResponse(request);
+	case _HEAD:
+		response = BuildGetOrHeadResponse(sockets[index].buffer, type);
+		break;
+			/*case _PUT:
+				responerasese = HTTP::PutResponse(request);
 				break;
 			case _DELETE:
 				response = HTTP::DeleteResponse(request);
