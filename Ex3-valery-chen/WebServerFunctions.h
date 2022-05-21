@@ -10,4 +10,4 @@ string BuildOptionsResponse(string request);
 string BuildTraceResponse(string request);
 string BuildErrorResponse(string request);
 string BuildTimeoutResponse();
-string BuildHeadResponse(string request);
+//string BuildHeadResponse(string request);
