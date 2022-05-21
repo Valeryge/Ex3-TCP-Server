@@ -19,10 +19,10 @@ string postResponse() {
 		"HTTP/1.1 200 OK\r\n"
 		"Date: " + curTimeStr + "\r\n"
 		"Server: WebServer\r\n"
-		"Content-Type: text/html\r\n"
 		"Connection: Keep-Alive\r\n"
-		"Content-Length: 35\r\n\r\n"
-		"Post request successfully recieved!\n";
+		"Content-Type: text/html\r\n"
+		"Content-Length: 27\r\n\r\n"
+		"Your Post request recieved.\n";
 
 	return appLayer;
 }
@@ -38,11 +38,11 @@ string GetLastModified(string i_FileName) {
 }
 
 string getAppLayer(string filename,int type) {
-	string AppLayer, header, html, htmlSize;
+	string AppLayer, header, html;
+		int htmlSize;
 
 	getline(ifstream(filename), html, '\0');
-	html.erase(0, 3); // undisired characters
-	htmlSize = to_string(strlen(html.c_str()) - 1);
+	htmlSize = strlen(html.c_str()) - 1;
 	if (strcmp(filename.c_str(), "C:\\temp\\Error404.html")) {
 		header = "HTTP/1.1 200 OK\r\n";
 		
@@ -51,14 +51,16 @@ string getAppLayer(string filename,int type) {
 		header = "HTTP/1.1 404 Not Found\r\n";
 	}
 
-	header +="Server: WebServer\r\n"
-		"Connection: Keep-Alive\r\n"
+	header +=
 		"Date: " + GetNowTime() + "\r\n"
+		"Server: WebServer\r\n"
 		"Last-Modified: " + GetLastModified(filename) + "\r\n"
+		"Connection: Keep-Alive\r\n"
 		"Content-Type: text/html\r\n"
-		"Content-Length: " + htmlSize + "\r\n\r\n";
-	AppLayer = header+ html;
+		"Content-Length: " + to_string(htmlSize) + "\r\n\r\n";
+	
 	if (type== _GET) {
+		AppLayer = header + html;
 		return AppLayer;
 	}
 	else {
@@ -92,24 +94,7 @@ string BuildGetOrHeadResponse(string request,int type) {
 	
 	return appLayer;
 }
-//string BuildHeadResponse(string request){
-//
-//	string appLayer;
-//	string source =GetResource(request);
-//	string parameterLang = GetLangParameterValue(request);
-//
-//	if (!strcmp(source.c_str(), "/site.html")) {
-//		if (!strcmp(parameterLang.c_str(), "en")) appLayer = getAppLayer("C:\\temp\\en_site.html");
-//		else if (!strcmp(parameterLang.c_str(), "he")) appLayer = getAppLayer("C:\\temp\\he_site.html");
-//		else if (!strcmp(parameterLang.c_str(), "fr")) appLayer = getAppLayer("C:\\temp\\fr_site.html");
-//		else										   appLayer = getAppLayer("C:\\temp\\site_404.html");
-//	}
-//	else {
-//		appLayer = getAppLayer("C:\\temp\\site_404.html");
-//	}
-//
-//	return appLayer;
-//}
+
 
 // valery code
 
@@ -118,8 +103,8 @@ string BuildOptionsResponse(string request) {
 
 	string nowTime = GetNowTime();
 	string response =
-		"HTTP/1.1 200 OK\r\nServer: WebServer\r\nConnection: Keep-Alive\r\n"
-		"Date: " + nowTime + "\r\nContent-Type: text/html\r\nContent-Length: 69\r\n"
+		"HTTP/1.1 200 OK\r\nDate: " + nowTime + "\r\nServer: WebServer\r\nConnection: Keep-Alive\r\n"
+		"Content-Type: text/html\r\nContent-Length: 69\r\n"
 		"Allow: HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE\r\n\r\n"
 	    "The allowed methods are: HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE\n";
 	return response;
@@ -129,10 +114,8 @@ string BuildOptionsResponse(string request) {
 
 string BuildTraceResponse(string request) {
 	string nowTime = GetNowTime();
-
 	string response =
-		"HTTP/1.1 200 OK\r\nServer: WebServer\r\nConnection: Keep-Alive\r\n"
-		"Date: " + nowTime + "\r\n"
+		"HTTP/1.1 200 OK\r\nDate: " + nowTime + "\r\nServer: WebServer\r\nConnection: Keep-Alive\r\n"
 		"Content-Type: message/http\r\n"
 		"Content-Length: " + to_string(request.length() + 1) + "\r\n\r\n"
 		+ request + "\r\n";
@@ -145,9 +128,9 @@ string BuildErrorResponse(string request) {
 
 	string response = 
 		"HTTP/1.1 405 Method Not Allowed\r\n"
+		"Date: " + nowTime + "\r\n"
 		"Server: WebServer\r\n"
 		"Connection: Keep-Alive\r\n"
-		"Date: " + nowTime + "\r\n"
 		"Content-Type: text/html\r\n"
 		"Content-Length: 88\r\n"
 		"Allow: OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE\r\n\r\n"
@@ -161,8 +144,8 @@ string BuildTimeoutResponse() {
 	string nowTime = GetNowTime();
 
 	string response = "HTTP/1.1 408 Request Timeout\r\n"
-		"Server: WebServer\r\n"
 		"Date: " + nowTime + "\r\n"
+		"Server: WebServer\r\n"
 		"Connection: close\r\n\r\n\n";
 
 	return response;
