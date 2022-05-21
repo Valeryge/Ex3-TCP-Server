@@ -74,10 +74,10 @@ string BuildGetOrHeadResponse(string request,int type) {
 	string source = GetResource(request);
 	string parameterLang = GetLangParameterValue(request);
 
-	//if (strcmp(source.c_str(), "/site.html")!=0) {
-	//	appLayer = getAppLayer("C:\\Temp\\Error404.html");
-	//}
-	//else {
+	if (strcmp(source.c_str(), "/MyWebsite.html")!=0) {
+		appLayer = getAppLayer("C:\\Temp\\Error404.html", type);
+	}
+	else {
 		
 		if (strcmp(parameterLang.c_str(), "en")==0|| strcmp(parameterLang.c_str(), "he") == 0|| strcmp(parameterLang.c_str(), "fr") == 0)
 		{
@@ -88,7 +88,7 @@ string BuildGetOrHeadResponse(string request,int type) {
 		{
 			appLayer = getAppLayer("C:\\Temp\\Error404.html", type);
 		}
-	/*}*/
+	}
 	
 	return appLayer;
 }
