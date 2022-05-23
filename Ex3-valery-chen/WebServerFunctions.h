@@ -10,4 +10,6 @@ string BuildOptionsResponse(string request);
 string BuildTraceResponse(string request);
 string BuildErrorResponse(string request);
 string BuildTimeoutResponse();
+string BuildPutResponse(string request);
+string GetPutAppLayer(string fileName);
 //string BuildHeadResponse(string request);

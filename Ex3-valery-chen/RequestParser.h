@@ -25,14 +25,13 @@
 #define _DELETE 6
 #define _TRACE 7
 #define _ERROR 8
-#define PUT_created 1
-#define PUT_modified 2
 #define DELETE_success 1
 #define DELETE_failed 2
 #define MINUTES2 120000
 using namespace std;
 
-string GetResource(string request);
-string GetLangParameterValue(string request);
+string getResource(string request);
+string getLangParameterValue(string request);
 const int GetRequestType(string request);
-void printBody(string request);
+string getFileName(string request);
+string getBody(string request);

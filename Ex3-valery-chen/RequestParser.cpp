@@ -1,5 +1,5 @@
 #include "RequestParser.h"
-void printBody(string request)
+string getBody(string request)
 {
 	int requestSize = request.size();
 	char len[1000];
@@ -22,9 +22,9 @@ void printBody(string request)
 		requestSize--;
 		j--;
 	}
-	cout << string(body)<<endl;
+	return body;
 }
-string GetResource(string request) {
+string getResource(string request) {
 
 	int i = 0;
 	int j = 0;
@@ -44,7 +44,28 @@ string GetResource(string request) {
 
 	return resource;
 }
-string GetLangParameterValue(string request) {
+
+string getFileName(string request) {
+	int i = 0;
+	int j = 0;
+	while (request[i] != ' ')
+	{
+		i++;
+	}
+	i++;
+	j = i;
+	while (request[j] != ' ')
+	{
+		j++;
+	}
+
+	string fileName = request.substr(i, j - i);
+
+
+	return fileName;
+}
+
+string getLangParameterValue(string request) {
 
 	string valueOfLang = "";
 	int indexOfLang = request.find("lang");

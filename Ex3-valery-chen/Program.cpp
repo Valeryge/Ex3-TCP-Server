@@ -257,7 +257,7 @@ void receiveMessage(int index)
 	SOCKET msgSocket = sockets[index].id;
 
 	int len = sockets[index].len;
-	int bytesRecv = recv(msgSocket, &sockets[index].buffer[len], sizeof(sockets[index].buffer) - len, 0);
+	int bytesRecv = recv(msgSocket, &sockets[index].buffer[0], sizeof(sockets[index].buffer) , 0);
 
 	if (SOCKET_ERROR == bytesRecv)
 	{
@@ -321,7 +321,8 @@ void sendMessage(int index)
 		response = BuildGetOrHeadResponse(sockets[index].buffer, type);
 		break;
 	case _POST:
-		printBody(sockets[index].buffer);
+		cout << string(getBody(sockets[index].buffer)) << endl;
+		
 		response = postResponse();
 		break;
 	case _OPTIONS:			
@@ -333,10 +334,10 @@ void sendMessage(int index)
 	case _HEAD:
 		response = BuildGetOrHeadResponse(sockets[index].buffer, type);
 		break;
-			/*case _PUT:
-				responerasese = HTTP::PutResponse(request);
-				break;
-			case _DELETE:
+	case _PUT:
+		response =BuildPutResponse(sockets[index].buffer);
+		break;
+			/*case _DELETE:
 				response = HTTP::DeleteResponse(request);
 				break;
 			

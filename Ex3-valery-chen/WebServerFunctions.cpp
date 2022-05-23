@@ -12,6 +12,49 @@ string GetNowTime() {
 }
 //end valery
 
+string BuildPutResponse(string request) {
+
+	string fileName = getFileName(request);
+	string body = getBody(request);
+	string path = "C:\\temp\\" + fileName;
+	string curTimeStr = GetNowTime();
+	string appLayer;
+	ifstream theFile(path.c_str());
+	bool fileIsOpen = theFile.is_open();
+
+
+	if (fileIsOpen) {
+
+		theFile.close();
+		appLayer =
+			"HTTP/1.1 204 No Content\r\n"
+			"Date: " + curTimeStr + "\r\n"
+			"Connection: Keep-Alive\r\n"
+			"Server: WebServer\r\n"
+			"Content-Type: text/html\r\n"
+			"Content-Length: 0\r\n\r\n\n";
+	}
+	else {
+
+		appLayer =
+			"HTTP/1.1 201 Created\r\n"
+			"Date: " + curTimeStr + "\r\n"
+			"Connection: Keep-Alive\r\n"
+			"Server: WebServer\r\n"
+			"Content-Type: text/html\r\n"
+			"Content-Length: 33\r\n\r\n"
+			"The file was successfully created.\n";
+
+	}
+	ofstream file;
+	file.open(path);
+	file << body;
+	file.close();
+
+
+	return appLayer;
+}
+
 string postResponse() {
 
 	string curTimeStr = GetNowTime();
@@ -73,8 +116,8 @@ string getAppLayer(string filename,int type) {
 string BuildGetOrHeadResponse(string request,int type) {
 
 	string appLayer;
-	string source = GetResource(request);
-	string parameterLang = GetLangParameterValue(request);
+	string source = getResource(request);
+	string parameterLang = getLangParameterValue(request);
 
 	if (strcmp(source.c_str(), "/MyWebsite.html")!=0) {
 		appLayer = getAppLayer("C:\\Temp\\Error404.html", type);
