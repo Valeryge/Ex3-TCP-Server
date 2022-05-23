@@ -17,7 +17,6 @@ string BuildPutResponse(string request) {
 	string fileName = getFileName(request);
 	string body = getBody(request);
 	string path = "C:\\temp\\" + fileName;
-	string curTimeStr = GetNowTime();
 	string appLayer;
 	ifstream theFile(path.c_str());
 	bool fileIsOpen = theFile.is_open();
@@ -28,7 +27,7 @@ string BuildPutResponse(string request) {
 		theFile.close();
 		appLayer =
 			"HTTP/1.1 204 No Content\r\n"
-			"Date: " + curTimeStr + "\r\n"
+			"Date: " + GetNowTime() + "\r\n"
 			"Connection: Keep-Alive\r\n"
 			"Server: WebServer\r\n"
 			"Content-Type: text/html\r\n"
@@ -38,7 +37,7 @@ string BuildPutResponse(string request) {
 
 		appLayer =
 			"HTTP/1.1 201 Created\r\n"
-			"Date: " + curTimeStr + "\r\n"
+			"Date: " + GetNowTime() + "\r\n"
 			"Connection: Keep-Alive\r\n"
 			"Server: WebServer\r\n"
 			"Content-Type: text/html\r\n"
