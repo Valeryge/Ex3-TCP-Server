@@ -11,5 +11,5 @@ string BuildTraceResponse(string request);
 string BuildErrorResponse(string request);
 string BuildTimeoutResponse();
 string BuildPutResponse(string request);
-string GetPutAppLayer(string fileName);
+string BuildDeleteResponse(string request);
 //string BuildHeadResponse(string request);

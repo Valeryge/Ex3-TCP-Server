@@ -25,8 +25,6 @@
 #define _DELETE 6
 #define _TRACE 7
 #define _ERROR 8
-#define DELETE_success 1
-#define DELETE_failed 2
 #define MINUTES2 120000
 using namespace std;
 

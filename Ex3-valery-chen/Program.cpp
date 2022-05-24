@@ -21,41 +21,18 @@ struct SocketState sockets[MAX_SOCKETS] = { 0 };
 
 void main()
 {
-	// Initialize Winsock (Windows Sockets).
 
-	// Create a WSADATA object called wsaData.
-	// The WSADATA structure contains information about the Windows 
-	// Sockets implementation.
 	WSAData wsaData;
 
-	// Call WSAStartup and return its value as an integer and check for errors.
-	// The WSAStartup function initiates the use of WS2_32.DLL by a process.
-	// First parameter is the version number 2.2.
-	// The WSACleanup function destructs the use of WS2_32.DLL by a process.
 	if (NO_ERROR != WSAStartup(MAKEWORD(2, 2), &wsaData))
 	{
 		cout << "Time Server: Error at WSAStartup()\n";
 		return;
 	}
 
-	// Server side:
-	// Create and bind a socket to an internet address.
-	// Listen through the socket for incoming connections.
 
-	// After initialization, a SOCKET object is ready to be instantiated.
-
-	// Create a SOCKET object called listenSocket. 
-	// For this application:	use the Internet address family (AF_INET), 
-	//							streaming sockets (SOCK_STREAM), 
-	//							and the TCP/IP protocol (IPPROTO_TCP).
 	SOCKET listenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-	// Check for errors to ensure that the socket is a valid socket.
-	// Error detection is a key part of successful networking code. 
-	// If the socket call fails, it returns INVALID_SOCKET. 
-	// The if statement in the previous code is used to catch any errors that
-	// may have occurred while creating the socket. WSAGetLastError returns an 
-	// error number associated with the last error that occurred.
 	if (INVALID_SOCKET == listenSocket)
 	{
 		cout << "Time Server: Error at socket(): " << WSAGetLastError() << endl;
@@ -63,32 +40,14 @@ void main()
 		return;
 	}
 
-	// For a server to communicate on a network, it must bind the socket to 
-	// a network address.
-
-	// Need to assemble the required data for connection in sockaddr structure.
-
-	// Create a sockaddr_in object called serverService. 
 	sockaddr_in serverService;
-	// Address family (must be AF_INET - Internet address family).
 	serverService.sin_family = AF_INET;
-	// IP address. The sin_addr is a union (s_addr is a unsigned long 
-	// (4 bytes) data type).
-	// inet_addr (Iternet address) is used to convert a string (char *) 
-	// into unsigned long.
-	// The IP address is INADDR_ANY to accept connections on all interfaces.
+	
 	serverService.sin_addr.s_addr = INADDR_ANY;
-	// IP Port. The htons (host to network - short) function converts an
-	// unsigned short from host to TCP/IP network byte order 
-	// (which is big-endian).
+	
 	serverService.sin_port = htons(TIME_PORT);
 
-	// Bind the socket for client's requests.
-
-	// The bind function establishes a connection to a specified socket.
-	// The function uses the socket handler, the sockaddr structure (which
-	// defines properties of the desired connection) and the length of the
-	// sockaddr structure (in bytes).
+	
 	if (SOCKET_ERROR == bind(listenSocket, (SOCKADDR*)&serverService, sizeof(serverService)))
 	{
 		cout << "Time Server: Error at bind(): " << WSAGetLastError() << endl;
@@ -97,9 +56,7 @@ void main()
 		return;
 	}
 
-	// Listen on the Socket for incoming connections.
-	// This socket accepts only one connection (no pending connections 
-	// from other clients). This sets the backlog parameter.
+	
 	if (SOCKET_ERROR == listen(listenSocket, 5))
 	{
 		cout << "Time Server: Error at listen(): " << WSAGetLastError() << endl;
@@ -109,15 +66,10 @@ void main()
 	}
 	addSocket(listenSocket, LISTEN);
 
-	// Accept connections and handles them one by one.
+	
 	while (true)
 	{
-		// The select function determines the status of one or more sockets,
-		// waiting if necessary, to perform asynchronous I/O. Use fd_sets for
-		// sets of handles for reading, writing and exceptions. select gets "timeout" for waiting
-		// and still performing other operations (Use NULL for blocking). Finally,
-		// select returns the number of descriptors which are ready for use (use FD_ISSET
-		// macro to check which descriptor in each set is ready to be used).
+		
 		fd_set waitRecv;
 		FD_ZERO(&waitRecv);
 		for (int i = 0; i < MAX_SOCKETS; i++)
@@ -133,12 +85,6 @@ void main()
 			if (sockets[i].send == SEND)
 				FD_SET(sockets[i].id, &waitSend);
 		}
-
-		//
-		// Wait for interesting event.
-		// Note: First argument is ignored. The fourth is for exceptions.
-		// And as written above the last is a timeout, hence we are blocked if nothing happens.
-		//
 		int nfd;
 		nfd = select(0, &waitRecv, &waitSend, NULL, NULL);
 		if (nfd == SOCKET_ERROR)
@@ -155,7 +101,7 @@ void main()
 
 	}
 
-	// Closing connections and Winsock.
+	
 	cout << "Time Server: Closing Connection.\n";
 	closesocket(listenSocket);
 	WSACleanup();
@@ -224,7 +170,7 @@ void removeSocket(int index)
 void acceptConnection(int index)
 {
 	SOCKET id = sockets[index].id;
-	struct sockaddr_in from;		// Address of sending partner
+	struct sockaddr_in from;		
 	int fromLen = sizeof(from);
 
 	SOCKET msgSocket = accept(id, (struct sockaddr*)&from, &fromLen);
@@ -235,9 +181,7 @@ void acceptConnection(int index)
 	}
 	cout << "Time Server: Client " << inet_ntoa(from.sin_addr) << ":" << ntohs(from.sin_port) << " is connected." << endl;
 
-	//
-	// Set the socket to be in non-blocking mode.
-	//
+	
 	unsigned long flag = 1;
 	if (ioctlsocket(msgSocket, FIONBIO, &flag) != 0)
 	{
@@ -280,31 +224,7 @@ void receiveMessage(int index)
 		sockets[index].len += bytesRecv;
 		sockets[index].send = SEND;
 
-		/*if (sockets[index].len > 0)
-		{
-			if (strncmp(sockets[index].buffer, "TimeString", 10) == 0)
-			{
-				sockets[index].send = SEND;
-				sockets[index].sendSubType = SEND_TIME;
-				memcpy(sockets[index].buffer, &sockets[index].buffer[10], sockets[index].len - 10);
-				sockets[index].len -= 10;
-				return;
-			}
-			else if (strncmp(sockets[index].buffer, "SecondsSince1970", 16) == 0)
-			{
-				sockets[index].send = SEND;
-				sockets[index].sendSubType = SEND_SECONDS;
-				memcpy(sockets[index].buffer, &sockets[index].buffer[16], sockets[index].len - 16);
-				sockets[index].len -= 16;
-				return;
-			}
-			else if (strncmp(sockets[index].buffer, "Exit", 4) == 0)
-			{
-				closesocket(msgSocket);
-				removeSocket(index);
-				return;
-			}
-		}*/
+	
 	}
 
 }
@@ -322,7 +242,6 @@ void sendMessage(int index)
 		break;
 	case _POST:
 		cout << string(getBody(sockets[index].buffer)) << endl;
-		
 		response = postResponse();
 		break;
 	case _OPTIONS:			
@@ -337,13 +256,12 @@ void sendMessage(int index)
 	case _PUT:
 		response =BuildPutResponse(sockets[index].buffer);
 		break;
-			/*case _DELETE:
-				response = HTTP::DeleteResponse(request);
-				break;
-			
-			*/default:
-				response = BuildErrorResponse(sockets[index].buffer);
-				break;
+	case _DELETE:
+		response = BuildDeleteResponse(sockets[index].buffer);
+		break;
+	default:
+		response = BuildErrorResponse(sockets[index].buffer);
+		break;
 			
 	}
 

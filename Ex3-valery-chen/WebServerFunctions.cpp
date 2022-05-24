@@ -14,15 +14,14 @@ string GetNowTime() {
 
 string BuildPutResponse(string request) {
 
-	string fileName = getFileName(request);
-	string body = getBody(request);
-	string path = "C:\\temp\\" + fileName;
+	
+	string filePath = "C:\\temp\\" + getFileName(request);
 	string appLayer;
-	ifstream theFile(path.c_str());
-	bool fileIsOpen = theFile.is_open();
+	ifstream theFile(filePath.c_str());
 
 
-	if (fileIsOpen) {
+	if (theFile.is_open()) 
+	{
 
 		theFile.close();
 		appLayer =
@@ -33,7 +32,8 @@ string BuildPutResponse(string request) {
 			"Content-Type: text/html\r\n"
 			"Content-Length: 0\r\n\r\n\n";
 	}
-	else {
+	else 
+	{
 
 		appLayer =
 			"HTTP/1.1 201 Created\r\n"
@@ -46,20 +46,55 @@ string BuildPutResponse(string request) {
 
 	}
 	ofstream file;
-	file.open(path);
-	file << body;
+	file.open(filePath);
+	file << getBody(request);
 	file.close();
 
 
 	return appLayer;
 }
+string BuildDeleteResponse(string request)
+{
 
+  string filePath = "C:\\temp\\" + getFileName(request);
+  string appLayer;
+  ifstream file(filePath.c_str());
+
+		if (file.is_open()) 
+		{
+			
+			file.close();
+			remove(filePath.c_str());
+			return appLayer=
+				"HTTP/1.1 200 OK\r\n"
+				"Date: " + GetNowTime() + "\r\n"
+				"Server: WebServer\r\n"
+				"Connection: Keep-Alive\r\n"
+				"Content-Type: text/html\r\n"
+				"Content-Length: 34\r\n\r\n"
+				"The file was successfully deleted.\n";
+			
+		}
+		else 
+		{
+			return appLayer =
+				"HTTP/1.1 400 Bad Request\r\n"
+				"Date: " + GetNowTime() + "\r\n"
+				"Server: WebServer\r\n"
+				"Connection: Keep-Alive\r\n"
+				"Content-Type: text/html\r\n"
+				"Content-Length: 23\r\n\r\n"
+				"The file is not exists.\n";
+		}
+
+	
+}
 string postResponse() {
 
-	string curTimeStr = GetNowTime();
+
 	string appLayer =
 		"HTTP/1.1 200 OK\r\n"
-		"Date: " + curTimeStr + "\r\n"
+		"Date: " + GetNowTime() + "\r\n"
 		"Server: WebServer\r\n"
 		"Connection: Keep-Alive\r\n"
 		"Content-Type: text/html\r\n"
@@ -177,7 +212,7 @@ string BuildErrorResponse(string request) {
 		"Content-Length: 88\r\n"
 		"Allow: OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE\r\n\r\n"
 		"Method Not Allowed\n"
-		"The allowed methods are: OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE\n";
+		"The allowed methods are: \nOPTIONS\n GET\n HEAD\n POST\n PUT\n DELETE\n TRACE\n";
 
 	return response;
 }
