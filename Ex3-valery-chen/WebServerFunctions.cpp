@@ -212,7 +212,7 @@ string BuildErrorResponse(string request) {
 		"Content-Length: 88\r\n"
 		"Allow: OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE\r\n\r\n"
 		"Method Not Allowed\n"
-		"The allowed methods are: \nOPTIONS\n GET\n HEAD\n POST\n PUT\n DELETE\n TRACE\n";
+		"The allowed methods:\n GET\n HEAD\n POST\n PUT\n DELETE\n TRACE\nOPTIONS\n";
 
 	return response;
 }
