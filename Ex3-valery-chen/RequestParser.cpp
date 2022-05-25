@@ -28,20 +28,25 @@ string getResource(string request) {
 
 	int i = 0;
 	int j = 0;
+	string resource;
 	while (request[i] != ' ')
 	{
 		i++;
 	}
 	i++;
 	j = i;
-	while (request[j] != '?')
+	/*while (request[j] != '?')
 	{
 		j++;
+	}*/
+	int indexLen = request.find("?");
+	if (indexLen != -1) {
+	  resource = request.substr(i, indexLen - i);
 	}
-	
-	string resource=request.substr(i, j-i);
-
-
+	else
+	{
+		resource = " ";
+	}
 	return resource;
 }
 
