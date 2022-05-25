@@ -41,7 +41,7 @@ string BuildPutResponse(string request) {
 			"Connection: Keep-Alive\r\n"
 			"Server: WebServer\r\n"
 			"Content-Type: text/html\r\n"
-			"Content-Length: 33\r\n\r\n"
+			"Content-Length: 34\r\n\r\n"
 			"The file was successfully created.\n";
 
 	}
@@ -182,9 +182,9 @@ string BuildOptionsResponse(string request) {
 	string nowTime = GetNowTime();
 	string response =
 		"HTTP/1.1 200 OK\r\nDate: " + nowTime + "\r\nServer: WebServer\r\nConnection: Keep-Alive\r\n"
-		"Content-Type: text/html\r\nContent-Length: 69\r\n"
+		"Content-Type: text/html\r\nContent-Length: 55\r\n"
 		"Allow: HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE\r\n\r\n"
-	    "The allowed methods are: HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE\n";
+	    "Allowed methods: HEAD GET POST PUT DELETE OPTIONS TRACE\n";
 	return response;
 }
 
