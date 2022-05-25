@@ -120,12 +120,12 @@ string getAppLayer(string filename,int type) {
 
 	getline(ifstream(filename), html, '\0');
 	htmlSize = strlen(html.c_str()) - 1;
-	if (strcmp(filename.c_str(), "C:\\temp\\Error404.html")) {
-		header = "HTTP/1.1 200 OK\r\n";
-		
+	if (strcmp(filename.c_str(), "C:\\temp\\Error404.html")==0) {
+	
+		header = "HTTP/1.1 404 Not Found\r\n";
 	}
 	else {
-		header = "HTTP/1.1 404 Not Found\r\n";
+		header = "HTTP/1.1 200 OK\r\n";
 	}
 
 	header +=
@@ -143,6 +143,7 @@ string getAppLayer(string filename,int type) {
 	else {
 		return header;
 	}
+	
 	
 }
 
