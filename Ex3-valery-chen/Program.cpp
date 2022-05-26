@@ -9,6 +9,7 @@ struct SocketState
 	int sendSubType;	// Sending sub-type
 	char buffer[1000];
 	int len;
+	unsigned int beginCountTimeout;
 };
 const int MAX_SOCKETS = 60;
 const int TIME_PORT = 8080;
@@ -93,6 +94,8 @@ void main()
 			WSACleanup();
 			return;
 		}
+
+		timeoutHandler();
 		handleWaitingRecv(waitRecv, nfd);
 		handleWaitingSend(waitSend, nfd);
 
@@ -147,12 +150,13 @@ bool addSocket(SOCKET id, int what)
 {
 	for (int i = 0; i < MAX_SOCKETS; i++)
 	{
-		if (sockets[i].recv == EMPTY)
+		if (sockets[i].recv == 0)
 		{
 			sockets[i].id = id;
 			sockets[i].recv = what;
 			sockets[i].send = IDLE;
 			sockets[i].len = 0;
+			sockets[i].beginCountTimeout = (unsigned int)GetTickCount();
 			socketsCount++;
 			return (true);
 		}
@@ -162,8 +166,9 @@ bool addSocket(SOCKET id, int what)
 
 void removeSocket(int index)
 {
-	sockets[index].recv = EMPTY;
-	sockets[index].send = EMPTY;
+	sockets[index].recv = 0;
+	sockets[index].send = 0;
+	sockets[index].beginCountTimeout = 0;
 	socketsCount--;
 }
 
@@ -272,6 +277,7 @@ void sendMessage(int index)
 		cout << "Time Server: Error at send(): " << WSAGetLastError() << endl;
 		return;
 	}
+	sockets[index].beginCountTimeout= (unsigned int)GetTickCount();
 
 	cout << "Time Server: Sent: " << bytesSent << "\\" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";
 
@@ -280,6 +286,42 @@ void sendMessage(int index)
 
 
 
+void timeoutHandler() {
+
+	string response;
+	unsigned int stopTimeout=0;
+	
+	
+	for (int i = 1; i < MAX_SOCKETS; i++)
+	{
+		
+		if (sockets[i].recv != 0 || sockets[i].send != 0)
+		{
+			stopTimeout = (unsigned int)GetTickCount();
+			if (stopTimeout - sockets[i].beginCountTimeout >120000) {
+				cout << "Web Server : one of the connections closed." << endl;
+				
+				char sendBuff[1000];
+				int bytesSent = 0;
+				SOCKET msgSocket = sockets[i].id;
+				response = BuildTimeoutResponse();
+				strcpy(sendBuff, response.c_str());
+				sendBuff[response.length() - 1] = 0;
+				bytesSent = send(msgSocket, sendBuff, (int)strlen(sendBuff), 0);
+
+				if (SOCKET_ERROR == bytesSent)
+				{
+					cout << "Web Server: Error at send(): " << WSAGetLastError() << endl;
+					return;
+				}
+			
+				closesocket(sockets[i].id);
+				removeSocket(i);
+			}
+			stopTimeout = 0;
+		}
+	}
+}
 
 
 

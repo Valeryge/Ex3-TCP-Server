@@ -201,6 +201,7 @@ string BuildTraceResponse(string request) {
 	return response;
 }
 
+
 string BuildErrorResponse(string request) {
 	string nowTime = GetNowTime();
 
@@ -218,11 +219,12 @@ string BuildErrorResponse(string request) {
 	return response;
 }
 
-string BuildTimeoutResponse() {
-	string nowTime = GetNowTime();
 
-	string response = "HTTP/1.1 408 Request Timeout\r\n"
-		"Date: " + nowTime + "\r\n"
+string BuildTimeoutResponse() {
+
+	string response = 
+		"HTTP/1.1 408 Request Timeout\r\n"
+		"Date: " + GetNowTime() + "\r\n"
 		"Server: WebServer\r\n"
 		"Connection: close\r\n\r\n\n";
 
