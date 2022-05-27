@@ -35,10 +35,7 @@ string getResource(string request) {
 	}
 	i++;
 	j = i;
-	/*while (request[j] != '?')
-	{
-		j++;
-	}*/
+
 	int indexLen = request.find("?");
 	if (indexLen != -1) {
 	  resource = request.substr(i, indexLen - i);
@@ -88,7 +85,7 @@ string getLangParameterValue(string request) {
 }
 
 
-const int GetRequestType(string request)
+string GetType(string request)
 {
 	string requestType = "";
 
@@ -99,36 +96,6 @@ const int GetRequestType(string request)
 	}
 	requestType = request.substr(0, i);
 
-	if (!strcmp(requestType.c_str(), "GET"))
-	{
-		return _GET;
-	}
-	else if (!strcmp(requestType.c_str(), "POST"))
-	{
-		return _POST;
-	}
-	else if (!strcmp(requestType.c_str(), "HEAD"))
-	{
-		return _HEAD;
-	}
-	else if (!strcmp(requestType.c_str(), "OPTIONS"))
-	{
-		return _OPTIONS;
-	}
-	else if (!strcmp(requestType.c_str(), "PUT"))
-	{
-		return _PUT;
-	}
-	else if (!strcmp(requestType.c_str(), "DELETE"))
-	{
-		return _DELETE;
-	}
-	else if (!strcmp(requestType.c_str(), "TRACE"))
-	{
-		return _TRACE;
-	}
-	else
-	{
-		return _ERROR;
-	}
+	return requestType;
+	
 }

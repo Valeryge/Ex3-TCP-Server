@@ -3,10 +3,10 @@
 #include "WebServerFunctions.h"
 struct SocketState
 {
-	SOCKET id;			// Socket handle
-	int	recv;			// Receiving?
-	int	send;			// Sending?
-	int sendSubType;	// Sending sub-type
+	SOCKET id;			
+	int	recv;			
+	int	send;			
+	int sendSubType;	
 	char buffer[1000];
 	int len;
 	unsigned int beginCountTimeout;
@@ -27,7 +27,7 @@ void main()
 
 	if (NO_ERROR != WSAStartup(MAKEWORD(2, 2), &wsaData))
 	{
-		cout << "Time Server: Error at WSAStartup()\n";
+		cout << "Server: Error at WSAStartup()\n";
 		return;
 	}
 
@@ -36,7 +36,7 @@ void main()
 
 	if (INVALID_SOCKET == listenSocket)
 	{
-		cout << "Time Server: Error at socket(): " << WSAGetLastError() << endl;
+		cout << "Server: Error at socket(): " << WSAGetLastError() << endl;
 		WSACleanup();
 		return;
 	}
@@ -51,7 +51,7 @@ void main()
 	
 	if (SOCKET_ERROR == bind(listenSocket, (SOCKADDR*)&serverService, sizeof(serverService)))
 	{
-		cout << "Time Server: Error at bind(): " << WSAGetLastError() << endl;
+		cout << "Server: Error at bind(): " << WSAGetLastError() << endl;
 		closesocket(listenSocket);
 		WSACleanup();
 		return;
@@ -60,7 +60,7 @@ void main()
 	
 	if (SOCKET_ERROR == listen(listenSocket, 5))
 	{
-		cout << "Time Server: Error at listen(): " << WSAGetLastError() << endl;
+		cout << "Server: Error at listen(): " << WSAGetLastError() << endl;
 		closesocket(listenSocket);
 		WSACleanup();
 		return;
@@ -98,9 +98,6 @@ void main()
 		timeoutHandler();
 		handleWaitingRecv(waitRecv, nfd);
 		handleWaitingSend(waitSend, nfd);
-
-
-
 
 	}
 
@@ -190,7 +187,7 @@ void acceptConnection(int index)
 	unsigned long flag = 1;
 	if (ioctlsocket(msgSocket, FIONBIO, &flag) != 0)
 	{
-		cout << "Time Server: Error at ioctlsocket(): " << WSAGetLastError() << endl;
+		cout << "Server: Error at ioctlsocket(): " << WSAGetLastError() << endl;
 	}
 
 	if (addSocket(msgSocket, RECEIVE) == false)
@@ -210,7 +207,7 @@ void receiveMessage(int index)
 
 	if (SOCKET_ERROR == bytesRecv)
 	{
-		cout << "Time Server: Error at recv(): " << WSAGetLastError() << endl;
+		cout << "Server: Error at recv(): " << WSAGetLastError() << endl;
 		closesocket(msgSocket);
 		removeSocket(index);
 		return;
@@ -223,9 +220,7 @@ void receiveMessage(int index)
 	}
 	else
 	{
-		sockets[index].buffer[bytesRecv] = '\0'; //add the null-terminating to make it a string
-		//cout << "Time Server: Recieved: " << bytesRecv << " bytes of \"" << &sockets[index].buffer[len] << "\" message.\n";
-
+		sockets[index].buffer[bytesRecv] = '\0'; 
 		sockets[index].len += bytesRecv;
 		sockets[index].send = SEND;
 
@@ -236,50 +231,55 @@ void receiveMessage(int index)
 
 void sendMessage(int index)
 {
-	int bytesSent = 0;
 	char sendBuff[1000];
 	string response;
 	SOCKET msgSocket = sockets[index].id;
-	int type = (int)GetRequestType(sockets[index].buffer);
-	switch (type) {
-	case _GET:
-		response = BuildGetOrHeadResponse(sockets[index].buffer, type);
-		break;
-	case _POST:
-		cout << string(getBody(sockets[index].buffer)) << endl;
-		response = postResponse();
-		break;
-	case _OPTIONS:			
-		response = BuildOptionsResponse(sockets[index].buffer);
-		break;
-	case _TRACE:
-		response = BuildTraceResponse(sockets[index].buffer);
-		break;
-	case _HEAD:
-		response = BuildGetOrHeadResponse(sockets[index].buffer, type);
-		break;
-	case _PUT:
-		response =BuildPutResponse(sockets[index].buffer);
-		break;
-	case _DELETE:
-		response = BuildDeleteResponse(sockets[index].buffer);
-		break;
-	default:
-		response = BuildErrorResponse(sockets[index].buffer);
-		break;
-			
-	}
+	string requestType =GetType(sockets[index].buffer);
+	int bytesSent = 0;
 
+	if (strcmp(requestType.c_str(), "GET") == 0)
+	{
+		response = BuildGetOrHeadResponse(sockets[index].buffer, 0);
+	}
+	else if (strcmp(requestType.c_str(), "POST") == 0)
+	{
+		cout << getBody(sockets[index].buffer)<< endl;
+		response = BuildPostResponse();
+	}
+	else if (strcmp(requestType.c_str(), "OPTIONS") == 0)
+	{
+		response = BuildOptionsResponse(sockets[index].buffer);
+	}
+	else if (strcmp(requestType.c_str(), "TRACE") == 0)
+	{
+		response = BuildTraceResponse(sockets[index].buffer);
+	}
+	else if (strcmp(requestType.c_str(), "HEAD") == 0)
+	{
+		response = BuildGetOrHeadResponse(sockets[index].buffer, 1);
+	}
+	else if (strcmp(requestType.c_str(), "PUT") == 0)
+	{
+		response = BuildPutResponse(sockets[index].buffer);
+	}
+	else if (strcmp(requestType.c_str(), "DELETE") == 0)
+	{
+		response = BuildDeleteResponse(sockets[index].buffer);
+	}
+	
+	else
+	{
+		response = BuildErrorResponse(sockets[index].buffer);
+	}
+	
 	strcpy(sendBuff, response.c_str());
 	bytesSent = send(msgSocket, sendBuff, (int)strlen(sendBuff), 0);
 	if (SOCKET_ERROR == bytesSent)
 	{
-		cout << "Time Server: Error at send(): " << WSAGetLastError() << endl;
+		cout << "Server: Error at send(): " << WSAGetLastError() << endl;
 		return;
 	}
 	sockets[index].beginCountTimeout= (unsigned int)GetTickCount();
-
-	cout << "Time Server: Sent: " << bytesSent << "\\" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";
 
 	sockets[index].send = IDLE;
 }
@@ -291,15 +291,14 @@ void timeoutHandler() {
 	string response;
 	unsigned int stopTimeout=0;
 	
-	
 	for (int i = 1; i < MAX_SOCKETS; i++)
 	{
 		
-		if (sockets[i].recv != 0 || sockets[i].send != 0)
+		if (sockets[i].send != 0 || sockets[i].recv != 0 )
 		{
 			stopTimeout = (unsigned int)GetTickCount();
 			if (stopTimeout - sockets[i].beginCountTimeout >120000) {
-				cout << "Web Server : one of the connections closed." << endl;
+				cout << "Server : one of the connections closed!" << endl;
 				
 				char sendBuff[1000];
 				int bytesSent = 0;
@@ -311,7 +310,7 @@ void timeoutHandler() {
 
 				if (SOCKET_ERROR == bytesSent)
 				{
-					cout << "Web Server: Error at send(): " << WSAGetLastError() << endl;
+					cout << "Server: Error at send(): " << WSAGetLastError() << endl;
 					return;
 				}
 			
